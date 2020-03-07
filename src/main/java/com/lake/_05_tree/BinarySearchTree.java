@@ -39,7 +39,8 @@ public class BinarySearchTree<E> implements BinaryTreeInfo {
     }
 
     public void clear() {
-
+        root = null;
+        size = 0;
     }
 
     /**
@@ -177,6 +178,7 @@ public class BinarySearchTree<E> implements BinaryTreeInfo {
                 node.parent.right = null;
             }
         }
+        size--;
     }
 
     /**
