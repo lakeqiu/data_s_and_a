@@ -3,16 +3,14 @@ package com.lake._05_tree;
 import com.lake._05_tree.print.BinaryTrees;
 
 import javax.swing.tree.TreeNode;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * @author lakeqiu
  */
 public class Test5 {
     public static void main(String[] args) {
+
         BinarySearchTree<Integer> tree = new BinarySearchTree<>();
         tree.add(22);
         for (int i = 0; i < 10; i++) {
