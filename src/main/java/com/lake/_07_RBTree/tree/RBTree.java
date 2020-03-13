@@ -1,12 +1,22 @@
 package com.lake._07_RBTree.tree;
 
+import java.util.Comparator;
+
 /**
  * 红黑树继承于二叉平衡搜索树，这里只列出红黑树特有的属性。
  */
 public class RBTree<E> extends BBST<E> {
     private static final boolean RED = false;
     private static final boolean BLACK = true;
-	
+
+    public RBTree() {
+        this(null);
+    }
+
+    public RBTree(Comparator<E> comparator) {
+        super(comparator);
+    }
+
     @Override
     protected Node<E> createNode(E element, Node<E> parent) {
         return new RBNode<>(element, parent);
