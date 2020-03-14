@@ -189,7 +189,7 @@ public class HashMap<K, V> implements Map<K, V> {
         int index = index(key);
 
         Node<K, V> node = table[index];
-        int h1 = null == key ? 0 : key.hashCode();
+        int h1 = hash(key);
         while (node != null) {
             int cmp = compare(key, node.key, h1, node.hash);
             if (cmp == 0) {
