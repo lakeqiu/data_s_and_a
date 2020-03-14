@@ -60,7 +60,7 @@ public class HashMap<K, V> implements Map<K, V> {
         Node<K, V> parent = root;
         Node<K, V> node = root;
         int cmp = 0;
-        int h1 = null == key ? 0 : key.hashCode();
+        int h1 = hash(key);
         do {
             // compare这个方法最重要，说明了hashMap的元素可以是不实现比较
             // 那我们应该怎么比较
@@ -145,13 +145,23 @@ public class HashMap<K, V> implements Map<K, V> {
      * @return
      */
     private int index(K key) {
+        return hash(key) & (table.length - 1);
+    }
+
+    /**
+     * 对key的hash值进行扰动计算
+     * @param key
+     * @return
+     */
+    private int hash(K key) {
         if (null == key) {
             return 0;
         }
         int hash = key.hashCode();
         // hash ^ (hash << 16)是将key的hash值的高低16为进行一次混合运算
         // 防止程序员直接实现的hashCode得出的值分布不均
-        return (hash ^ (hash >>> 16)) & (table.length - 1);
+        return hash ^ (hash >>> 16);
+
     }
 
     /**
@@ -160,7 +170,7 @@ public class HashMap<K, V> implements Map<K, V> {
      * @return
      */
     private int index(Node<K, V> node) {
-        return (node.hash ^ (node.hash >>> 16)) & (table.length - 1);
+        return node.hash & (table.length - 1);
     }
 
     @Override
