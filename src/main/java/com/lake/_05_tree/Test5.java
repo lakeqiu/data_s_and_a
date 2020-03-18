@@ -20,21 +20,29 @@ public class Test5 {
         tree.add(50);
 
         BinaryTrees.println(tree);
-        tree.levelOrderTraversal(new BinarySearchTree.Visitor<Integer>() {
+/*        tree.levelOrderTraversal(new BinarySearchTree.Visitor<Integer>() {
             @Override
             public boolean visit(Integer element) {
                 System.out.print("_" + element + "_");
                 return false;
             }
+        });*/
+
+        tree.postorder(new BinarySearchTree.Visitor<Integer>() {
+            @Override
+            boolean visit(Integer element) {
+                System.out.print("_" + element + "_");
+                return false;
+            }
         });
-        System.out.println();
+/*        System.out.println();
         System.out.println(tree.height());
         System.out.println(tree.height2());
         System.out.println(tree.isComplete());
 
         tree.remove(22);
         BinaryTrees.println(tree);
-        System.out.println(tree.height());
+        System.out.println(tree.height());*/
         /*tree.toString();*/
     }
 

@@ -226,6 +226,103 @@ public class BinarySearchTree<E> implements BinaryTreeInfo {
     }
 
     /**
+     * 非递归遍历树
+     * @param visitor
+     */
+    public void preorder(Visitor<E> visitor) {
+        if (null == visitor || null == root) {
+            return;
+        }
+        Node<E> node = root;
+        // 建栈
+        Stack<Node<E>> stack = new Stack<>();
+        while (true) {
+            if (node != null) {
+                if (visitor.visit(node.element)) {
+                    return;
+                }
+                // 将右子节点入栈
+                if (node.right != null) {
+                    stack.push(node.right);
+                }
+                // 接下来访问子节点,向左走
+                node = node.left;
+            } else if (stack.isEmpty()) { // 到这里说明没有子节点且栈中没有元素了
+                // 直接返回
+                return;
+            } else { // 父节点与左子节点访问完了，该访问右节点了
+                node = stack.pop();
+            }
+        }
+    }
+
+    /**
+     * 非递归中序遍历
+     * @param visitor
+     */
+    public void inorder(Visitor<E> visitor) {
+        if (null == visitor || null == root) {
+            return;
+        }
+        Node<E> node = root;
+        // 建栈
+        Stack<Node<E>> stack = new Stack<>();
+        while (true) {
+            if (node != null) {
+                // 当前节点入栈
+                stack.push(node);
+                // 向左走
+                node = node.left;
+            } else if (stack.isEmpty()) { // 到这里说明没有子节点且栈中没有元素了
+                // 直接返回
+                return;
+            } else {
+                node = stack.pop();
+                if (visitor.visit(node.element)) {
+                    return;
+                }
+                // 访问其右子节点
+                node = node.right;
+            }
+        }
+    }
+
+    /**
+     * 非递归后序遍历
+     * @param visitor
+     */
+    public void postorder(Visitor<E> visitor) {
+        if (null == visitor || null == root) {
+            return;
+        }
+        Node<E> node = root;
+        // 建栈
+        Stack<Node<E>> stack = new Stack<>();
+        // 先将根节点入栈
+        stack.push(root);
+        // 记录上一次弹出访问的节点
+        Node<E> prev = null;
+        while (!stack.isEmpty()) {
+            Node<E> top = stack.peek();
+            // 如果节点是叶子节点或其子节点已经访问过的，那么其就应该访问
+            if (top.isLeaf() || (prev != null && prev.parent == top)) {
+                prev = stack.pop();
+                if (visitor.visit(top.element)) {
+                    return;
+                }
+            }else { // 不是上面的情况的话，将其左右子节点入栈
+                if (top.right != null) {
+                    stack.push(top.right);
+                }
+
+                if (top.left != null) {
+                    stack.push(top.left);
+                }
+            }
+        }
+    }
+
+    /**
      * 层序遍历
      */
     public void levelOrderTraversal(Visitor<E> visitor) {
