@@ -1,6 +1,7 @@
 package com.lake.graph;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * @author lakeqiu
@@ -12,6 +13,12 @@ public class ListGraph<V, E> extends Graph<V, E> {
      */
     private Map<V, Vertex<V, E>> vertices = new HashMap<>();
     private Set<Edge<V, E>> edges = new HashSet<>();
+    /**
+     * 边的权值比较器
+     */
+    private Comparator<Edge<V, E>> edgeComparator = (Edge<V, E> e1, Edge<V, E> e2) -> {
+        return weightManager.compare(e1.weight, e2.weight);
+    };
 
     @Override
     public int edgesSize() {
@@ -252,11 +259,6 @@ public class ListGraph<V, E> extends Graph<V, E> {
 
     }
 
-    @Override
-    public Set<EdgeInfo<V, E>> mst() {
-        return null;
-    }
-
     /**
      * 拓扑排序
      * @return 排序好的结果
@@ -306,14 +308,275 @@ public class ListGraph<V, E> extends Graph<V, E> {
     }
 
     @Override
+    public Set<EdgeInfo<V, E>> mst() {
+        return prim();
+    }
+
+    /**
+     * prim算法
+     * @return
+     */
+    private Set<EdgeInfo<V, E>> prim() {
+        // 1 先获取一个顶点(用迭代器)(获取最小生成树的起始顶点)
+        Iterator<Vertex<V, E>> iterator = vertices.values().iterator();
+        // 如果图中没有顶点，直接返回
+        if (!iterator.hasNext()) {
+            return null;
+        }
+        Vertex<V, E> vertex = iterator.next();
+
+        // 2 切分定理
+        // 用来存放最小生成树
+        Set<EdgeInfo<V, E>> edgeInfos = new HashSet<>();
+        // 用来存放已经是最小生成树的顶点
+        Set<Vertex<V, E>> addVertices = new HashSet<>();
+
+        // 将vertex顶点作为最小生成树的起始顶点放入addVertices中
+        addVertices.add(vertex);
+        // 最小堆，可以从中获取权值最小的边，进行切分，现在最小堆的边就是起始顶点向外的边
+        MinHeap<Edge<V, E>> heap = new MinHeap<>(vertex.outEdges, edgeComparator);
+        // 图中顶点数量
+        int size = vertices.size();
+
+        // 当堆为空并且最小生成树中顶点数量与图中的顶点数量相等时，最小生成树也就完成了
+        while (!heap.isEmpty() && addVertices.size() < size) {
+            // 从最小堆选出权值最小的边
+            Edge<V, E> edge = heap.remove();
+            // 如果这条边是最小生成树内顶点的连接边，则放弃这条边
+            if (addVertices.contains(edge.to)) {
+                continue;
+            }
+            // 加入最小生成树中
+            edgeInfos.add(edge.info());
+            // 将该边的终止节点加入最小生成树顶点集中
+            addVertices.add(edge.to);
+            // 将新加入的顶点的出边加入堆中
+            heap.addAll(edge.to.outEdges);
+        }
+        return edgeInfos;
+
+    }
+
+    /**
+     * kruskal算法
+     * @return
+     */
+    private Set<EdgeInfo<V, E>> kruskal() {
+        // edgeSize用来后面while循环进行判断（）
+        int edgeSize = edgesSize() - 1;
+        if (edgeSize < -1) {
+            return null;
+        }
+
+        // 存放最小生成树
+        Set<EdgeInfo<V, E>> edgeInfos = new HashSet<>();
+
+        // 存放最小生成树的顶点
+        Set<Vertex<V, E>> addVertices = new HashSet<>();
+        // 最小堆，将图中所有边放进去，选择不会构成环的权值最小的边
+        MinHeap<Edge<V, E>> heap = new MinHeap<>(edges, edgeComparator);
+
+        while (!heap.isEmpty() && edgeInfos.size() < edgeSize) {
+            // 获取最小生成树外权值最小的边
+            Edge<V, E> edge = heap.remove();
+
+            // 判断这条边加入最小生成树是否会构成环
+            if (addVertices.contains(edge.to) && addVertices.contains(edge.from)) {
+                continue;
+            }
+
+            edgeInfos.add(edge.info());
+            addVertices.add(edge.to);
+            addVertices.add(edge.from);
+        }
+
+        return edgeInfos;
+    }
+
+    /**
+     * 最短路径
+     * @param begin 起始顶点
+     * @return
+     */
+    @Override
     public Map<V, PathInfo<V, E>> shortestPath(V begin) {
-        return null;
+        return bellmanFord(begin);
     }
 
     @Override
     public Map<V, Map<V, PathInfo<V, E>>> shortestPath() {
         return null;
     }
+
+    /**
+     * 最短路径 dijkstra 算法
+     * @param begin 起始顶点
+     * @return
+     */
+    private Map<V, PathInfo<V, E>> dijkstra(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) {
+            return null;
+        }
+
+        // 存放已经拉起的路径
+        Map<V, PathInfo<V, E>> selectedPaths = new HashMap<>();
+        // 存放未拉起的路径
+        Map<Vertex<V, E>, PathInfo<V, E>> paths = new HashMap<>();
+        paths.put(beginVertex, new PathInfo<>(weightManager.zero()));
+        // 初始化paths
+//		for (Edge<V, E> edge : beginVertex.outEdges) {
+//			PathInfo<V, E> path = new PathInfo<>();
+//			path.weight = edge.weight;
+//			path.edgeInfos.add(edge.info());
+//			paths.put(edge.to, path);
+//		}
+
+        while (!paths.isEmpty()) {
+            Entry<Vertex<V, E>, PathInfo<V, E>> minEntry = getMinPath(paths);
+            // minVertex离开桌面
+            Vertex<V, E> minVertex = minEntry.getKey();
+            PathInfo<V, E> minPath = minEntry.getValue();
+            selectedPaths.put(minVertex.value, minPath);
+            paths.remove(minVertex);
+            // 对它的minVertex的outEdges进行松弛操作
+            for (Edge<V, E> edge : minVertex.outEdges) {
+                // 如果edge.to已经离开桌面，就没必要进行松弛操作
+                if (selectedPaths.containsKey(edge.to.value)) {
+                    continue;
+                }
+                // 进行松弛操作
+                relaxForDijkstra(edge, minPath, paths);
+            }
+        }
+
+        selectedPaths.remove(begin);
+        return selectedPaths;
+    }
+
+    /**
+     * 松弛
+     * @param edge 需要进行松弛的边
+     * @param fromPath edge的from的最短路径信息
+     * @param paths 存放着其他点（对于dijkstra来说，就是还没有离开桌面的点）的最短路径信息
+     */
+    private void relaxForDijkstra(Edge<V, E> edge, PathInfo<V, E> fromPath, Map<Vertex<V, E>, PathInfo<V, E>> paths) {
+        // 新的可选择的最短路径：beginVertex到edge.from的最短路径 + edge.weight
+        E newWeight = weightManager.add(fromPath.weight, edge.weight);
+        // 以前的最短路径：beginVertex到edge.to的最短路径
+        PathInfo<V, E> oldPath = paths.get(edge.to);
+        // 如果新路径比旧路径权值大
+        if (oldPath != null && weightManager.compare(newWeight, oldPath.weight) >= 0) {
+            return;
+        }
+
+        // 如果没有旧的路径的话创建新的路径，更新路径，否则清除旧的路径，填新值进去
+        if (oldPath == null) {
+            oldPath = new PathInfo<>();
+            paths.put(edge.to, oldPath);
+        } else {
+            oldPath.edgeInfos.clear();
+        }
+
+        oldPath.weight = newWeight;
+        oldPath.edgeInfos.addAll(fromPath.edgeInfos);
+        oldPath.edgeInfos.add(edge.info());
+    }
+
+    /**
+     * 从paths（即未来起来的）中挑一个最小的路径出来
+     * @param paths
+     * @return
+     */
+    private Entry<Vertex<V, E>, PathInfo<V, E>> getMinPath(Map<Vertex<V, E>, PathInfo<V, E>> paths) {
+        Iterator<Entry<Vertex<V, E>, PathInfo<V, E>>> it = paths.entrySet().iterator();
+        Entry<Vertex<V, E>, PathInfo<V, E>> minEntry = it.next();
+        while (it.hasNext()) {
+            Entry<Vertex<V, E>, PathInfo<V, E>> entry = it.next();
+            if (weightManager.compare(entry.getValue().weight, minEntry.getValue().weight) < 0) {
+                minEntry = entry;
+            }
+        }
+        return minEntry;
+    }
+
+    /**
+     * bellmanFord
+     * @param begin
+     * @return
+     */
+    @SuppressWarnings("unused")
+    private Map<V, PathInfo<V, E>> bellmanFord(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) {
+            return null;
+        }
+
+        // 存放所有松弛的边
+        Map<V, PathInfo<V, E>> selectedPaths = new HashMap<>();
+        // 由于需要起始顶点信息，故加进去，并将权值设置为0（强制实现zero方法）
+        selectedPaths.put(begin, new PathInfo<>(weightManager.zero()));
+
+        // 进行n-1次松弛
+        int count = vertices.size() - 1;
+        for (int i = 0; i < count; i++) { // v - 1 次
+            for (Edge<V, E> edge : edges) {
+                PathInfo<V, E> fromPath = selectedPaths.get(edge.from.value);
+                if (fromPath == null) {
+                    continue;
+                }
+                relax(edge, fromPath, selectedPaths);
+            }
+        }
+
+        // 上面已经松弛完成了，这里是用来判断是否存在负权环
+        // 然后存在，那么权值会再一次变更
+        for (Edge<V, E> edge : edges) {
+            PathInfo<V, E> fromPath = selectedPaths.get(edge.from.value);
+            if (fromPath == null) {
+                continue;
+            }
+            if (relax(edge, fromPath, selectedPaths)) {
+                System.out.println("有负权环");
+                return null;
+            }
+        }
+
+        // 将最开始的起始顶点去除（一开始用来辅助的）
+        selectedPaths.remove(begin);
+        return selectedPaths;
+    }
+
+
+    /**
+     * 松弛
+     * @param edge 需要进行松弛的边
+     * @param fromPath edge的from的最短路径信息
+     * @param paths 存放着其他点（对于dijkstra来说，就是还没有离开桌面的点）的最短路径信息
+     */
+    private boolean relax(Edge<V, E> edge, PathInfo<V, E> fromPath, Map<V, PathInfo<V, E>> paths) {
+        // 新的可选择的最短路径：beginVertex到edge.from的最短路径 + edge.weight
+        E newWeight = weightManager.add(fromPath.weight, edge.weight);
+        // 以前的最短路径：beginVertex到edge.to的最短路径
+        PathInfo<V, E> oldPath = paths.get(edge.to.value);
+        if (oldPath != null && weightManager.compare(newWeight, oldPath.weight) >= 0) {
+            return false;
+        }
+
+        if (oldPath == null) {
+            oldPath = new PathInfo<>();
+            paths.put(edge.to.value, oldPath);
+        } else {
+            oldPath.edgeInfos.clear();
+        }
+
+        oldPath.weight = newWeight;
+        oldPath.edgeInfos.addAll(fromPath.edgeInfos);
+        oldPath.edgeInfos.add(edge.info());
+
+        return true;
+    }
+
 
     /**
      * 顶点节点
