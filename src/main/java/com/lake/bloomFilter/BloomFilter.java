@@ -98,7 +98,9 @@ public class BloomFilter<T> {
             // 生成一个二进位的索引
             int index = combinedHash % bitSize;
             // 查询index位置的二进位是否为0
-            if (!get(index)) return false;
+            if (!get(index)) {
+                return false;
+            }
         }
         return true;
     }
