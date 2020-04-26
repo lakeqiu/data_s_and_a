@@ -218,8 +218,9 @@ public class MyLinkedList<E> implements MyList<E> {
 
     public static void main(String[] args) {
         MyLinkedList<Integer> list = new MyLinkedList<>();
-        list.add(1);
-        list.add(2);
+        list.add(0,1);
+        list.remove(1);
+        list.add(0,2);
         list.add(3);
         list.remove(0);
         list.add(8);
