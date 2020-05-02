@@ -85,48 +85,47 @@ public class Leet015 {
         LinkedList<Integer> track = new LinkedList<>();
         // 记录对应下标数据是否已经使用过
         boolean[] used = new boolean[nums.length];
-        backTrack(track, used, nums);
+        backTrack(track, nums, 0);
         return res;
-    }
+    }*/
 
-    *//**
+    /**
      * @param track 记录路径
-     * @param used 记录数据是否使用过
      * @param nums
-     *//*
-    private void backTrack(LinkedList<Integer> track, boolean[] used, int[] nums) {
+     */
+    /*private void backTrack(LinkedList<Integer> track, int[] nums, int begin) {
         // 触发结束条件
         if (track.size() == 3) {
             int sum = track.get(0) + track.get(1) + track.get(2);
             if (sum == 0) {
-                for (List<Integer> re : res) {
+                *//*for (List<Integer> re : res) {
                     // 前面一组有0的话 ， 0， 0， 0会被忽略
                     if (re.contains(track.get(0)) && re.contains(track.get(1))
                             && re.contains(track.get(2))) {
                         return;
                     }
-                }
+                }*//*
                 res.add(new LinkedList<>(track));
             }
             return;
         }
 
-        for (int i = 0; i < nums.length; i++) {
+        for (int i = begin; i < nums.length; i++) {
             // 判断元素是否使用过（即是否走过这条路径）
-            if (used[i]) {
+            if (i > 0 && nums[i] == nums[i-1]){
                 continue;
             }
 
-            used[i] = true;
             track.add(nums[i]);
+            *//*if (track.get(0) != nums[0]) {
+                return;
+            }*//*
 
             // 进入下一层决策树
-            backTrack(track, used, nums);
+            backTrack(track, nums, i + 1);
 
             // 到这里，说明以这个节点为起点的所有路径都走过了
             // 取消选择，走下一条
-
-            used[i] = false;
             track.removeLast();
         }
     }*/
