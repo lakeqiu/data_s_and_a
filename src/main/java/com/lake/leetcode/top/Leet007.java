@@ -25,36 +25,35 @@ package com.lake.leetcode.top;
  * @author lakeqiu
  */
 public class Leet007 {
+    // 公式反推法
     public int reverse(int x) {
-        if (x < 10 && x > -10) {
-            return x;
+        int res = 0;
+        while (x != 0) {
+            int preRes = res;
+            res = preRes * 10 + x % 10;
+            // 检查结果是否溢出
+            if (((res - x % 10) / 10) != preRes) {
+                return 0;
+            }
+
+            x /= 10;
         }
-
-        if (x == Integer.MIN_VALUE) {
-            return 0;
-        }
-
-        boolean isMinus = x < 0;
-        StringBuilder sb = new StringBuilder(10);
-        x = Math.abs(x);
-
-
-        while (x > 0) {
-            sb.append(x % 10);
-            x = x / 10;
-        }
-
-        Long value = Long.valueOf(sb.toString());
-        if (isMinus) {
-            value = - value;
-        }
-
-        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-            return 0;
-        }
-
-        return Math.toIntExact(value);
+        return res;
     }
+
+    /*// long法
+    public int reverse(int x) {
+        long res = 0;
+        while (x != 0) {
+            res = res * 10 + x % 10;
+            // 检查是否溢出
+            if (res < Integer.MIN_VALUE || res > Integer.MAX_VALUE) {
+                return 0;
+            }
+            x /= 10;
+        }
+        return (int) res;
+    }*/
 
     public static void main(String[] args) {
         System.out.println(new Leet007().reverse(-123));
