@@ -1,8 +1,8 @@
 package com.lake.leetcode._02;
 
-import com.lake._08_Set.Set;
-
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * 编写一个程序，找到两个单链表相交的起始节点。
@@ -46,6 +46,40 @@ public class Leet160 {
 
         return curA;
     }
+
+/*    // 栈
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) {
+            return null;
+        }
+
+        Deque<ListNode> stackA = new LinkedList<>();
+        Deque<ListNode> stackB = new LinkedList<>();
+
+        while (headA != null) {
+            stackA.push(headA);
+            headA = headA.next;
+        }
+
+        while (headB != null) {
+            stackB.push(headB);
+            headB = headB.next;
+        }
+
+        ListNode node = null;
+        while (!stackA.isEmpty() && !stackB.isEmpty()) {
+            ListNode pop = stackA.pop();
+            if (pop == stackB.pop()) {
+                node = pop;
+            } else {
+                break;
+            }
+        }
+
+        return node;
+    }*/
+
+
 
     /*// 哈希表法
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
