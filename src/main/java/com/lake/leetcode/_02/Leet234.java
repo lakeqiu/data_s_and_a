@@ -38,7 +38,7 @@ public class Leet234 {
         ListNode rHead = reverseList(middleNode.next);
         ListNode lHead = head;
 
-        while (rHead != null) {
+        while (lHead != null) {
             if (rHead.val != lHead.val) {
                 return false;
             }
