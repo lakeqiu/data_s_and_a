@@ -1,9 +1,6 @@
 package com.lake.leetcode._04;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
@@ -99,5 +96,55 @@ public class Leet438 {
             }
         }
         return result;
+    }
+
+    public List<Integer> findAnagrams2(String s, String p) {
+        char[] charsS = s.toCharArray();
+        char[] charsP = p.toCharArray();
+
+        Map<Character, Integer> windows = new HashMap<>(charsP.length);
+        Map<Character, Integer> needs = new HashMap<>(charsP.length);
+        int match = 0;
+
+        List<Integer> res = new ArrayList<>();
+
+        for (char c : charsP) {
+            needs.put(c, needs.getOrDefault(c, 0) + 1);
+        }
+
+        int left = 0, right = 0;
+        while (right < charsS.length) {
+            char c = charsS[right];
+
+            if (needs.containsKey(c)) {
+                windows.put(c, windows.getOrDefault(c, 0) + 1);
+
+                if (windows.get(c).equals(needs.get(c))) {
+                    match++;
+                }
+            }
+
+            right++;
+
+            while (match == needs.size()) {
+
+                if (right - left == charsP.length) {
+                    res.add(left);
+                }
+
+                char c1 = charsS[left];
+
+                if (needs.containsKey(c1)) {
+                    windows.put(c1, windows.get(c1) - 1);
+
+                    if (windows.get(c1) < needs.get(c1)) {
+                        match--;
+                    }
+                }
+
+                left++;
+            }
+        }
+        return res;
     }
 }

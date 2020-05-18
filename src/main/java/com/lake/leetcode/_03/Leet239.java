@@ -43,8 +43,60 @@ import java.util.*;
  * @author lakeqiu
  */
 public class Leet239 {
-    // 双端队列
     public static int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length == 0 || k < 1) {
+            return new int[0];
+        }
+
+        MonotonicQueue queue = new MonotonicQueue();
+        // 定义结果数组
+        int[] result = new int[nums.length - k + 1];
+
+        for (int i = 0; i < nums.length; i++) {
+            // 先填满窗口的前 k - 1 项
+            if (i < k - 1) {
+                queue.push(nums[i]);
+            } else {
+                queue.push(nums[i]);
+                result[i - k + 1] = queue.max();
+                // 窗口移动，去除前面的一项
+                queue.pop(nums[i - k + 1]);
+            }
+        }
+
+        return result;
+    }
+
+    private static class MonotonicQueue {
+        private Deque<Integer> deque = new LinkedList<>();
+
+        void push(int value) {
+            // 将在队列中前面比其小的值删除
+            while (!deque.isEmpty() && deque.peekLast() < value) {
+                deque.pollLast();
+            }
+
+            deque.offerLast(value);
+        }
+
+        int max() {
+            return deque.peekFirst();
+        }
+
+        /**
+         * 如果队列中最前面的值（最大值）等于 value
+         * 那么删除这个值
+         * @param value
+         */
+        void pop(int value) {
+            if (!deque.isEmpty() && deque.peekFirst() == value) {
+                deque.pollFirst();
+            }
+        }
+    }
+
+    // 双端队列
+    /*public static int[] maxSlidingWindow(int[] nums, int k) {
         if (nums == null || nums.length == 0 || k < 1) {
             return new int[0];
         }
@@ -83,7 +135,7 @@ public class Leet239 {
             result[w] = nums[deque.peekFirst()];
         }
         return result;
-    }
+    }*/
 
     public static void main(String[] args) {
         int[] ints = maxSlidingWindow(new int[]{7, 2, 4}, 2);

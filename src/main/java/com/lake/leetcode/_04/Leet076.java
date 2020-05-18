@@ -126,7 +126,7 @@ public class Leet076 {
                 // 要去掉的字符
                 char c2 = charsS[left];
 
-                // 更新窗口大小
+                // 新的窗口小于最小的窗口时，更新窗口大小
                 if (minLen > right - left) {
                     begin = left;
                     minLen = right - left;
@@ -146,6 +146,55 @@ public class Leet076 {
                 left++;
             }
         }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(begin, begin + minLen);
+    }
+
+    public String minWindow3(String s, String t) {
+        char[] charsS = s.toCharArray();
+        char[] charsT = t.toCharArray();
+
+        Map<Character, Integer> windows = new HashMap<>(charsT.length);
+        Map<Character, Integer> needs = new HashMap<>(charsT.length);
+        int match = 0;
+
+        int begin = 0, minLen = Integer.MAX_VALUE;
+
+        for (char c : charsT) {
+            needs.put(c, needs.getOrDefault(c, 0) + 1);
+        }
+
+        int left = 0, right = 0;
+        while (right < charsS.length) {
+            char c = charsS[right];
+            if (needs.containsKey(c)) {
+                windows.put(c, windows.getOrDefault(c, 0) + 1);
+
+                if (needs.get(c).equals(windows.get(c))) {
+                    match++;
+                }
+            }
+            right++;
+
+            while (needs.size() == match) {
+                char c1 = charsS[left];
+
+                if (right - left < minLen) {
+                    begin = left;
+                    minLen = right - left;
+                }
+
+                if (needs.containsKey(c1)) {
+                    windows.put(c1, windows.get(c1) - 1);
+
+                    if (windows.get(c1) < needs.get(c1)) {
+                        match--;
+                    }
+                }
+
+                left++;
+            }
+        }
+
         return minLen == Integer.MAX_VALUE ? "" : s.substring(begin, begin + minLen);
     }
 
