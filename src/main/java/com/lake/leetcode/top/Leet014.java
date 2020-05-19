@@ -1,5 +1,7 @@
 package com.lake.leetcode.top;
 
+import java.util.Arrays;
+
 /**
  * 编写一个函数来查找字符串数组中的最长公共前缀。
  *
@@ -25,6 +27,23 @@ package com.lake.leetcode.top;
  */
 public class Leet014 {
     public String longestCommonPrefix(String[] strs) {
+        Arrays.sort(strs);
+
+        char[] c1 = strs[0].toCharArray();
+        char[] c2 = strs[strs.length - 1].toCharArray();
+        int minLen = Math.min(c1.length, c2.length);
+
+        StringBuilder prefix = new StringBuilder();
+        for (int i = 0; i < minLen; i++) {
+            if (c1[i] != c2[i]) {
+                break;
+            }
+            prefix.append(c1[i]);
+        }
+
+        return prefix.toString();
+    }
+    /*public String longestCommonPrefix(String[] strs) {
         String prefix = strs[0];
 
         for (int i = 1; i < strs.length; i++) {
@@ -44,7 +63,7 @@ public class Leet014 {
             }
         }
         return prefix;
-    }
+    }*/
 
     public static void main(String[] args) {
         System.out.println(new Leet014().longestCommonPrefix(new String[]{"flower","flow","flight"}));

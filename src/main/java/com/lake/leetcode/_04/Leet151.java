@@ -30,6 +30,29 @@ import java.util.Stack;
  * @author lakeqiu
  */
 public class Leet151 {
+    /*// 双指针
+    public String reverseWords(String s) {
+        s = s.trim();
+        char[] chars = s.toCharArray();
+
+        int j = chars.length - 1;
+        int i = j;
+
+        StringBuilder res = new StringBuilder();
+
+        while (i >= 0) {
+            while (i >= 0 && chars[i] != ' ') {
+                i--;
+            }
+            res.append(s.substring(i + 1, j + 1)).append(" ");
+            while (i >= 0 && chars[i] == ' ') {
+                i--;
+            }
+            j = i;
+        }
+
+        return res.toString().trim();
+    }*/
     public String reverseWords(String s) {
 
         char[] array = s.toCharArray();
