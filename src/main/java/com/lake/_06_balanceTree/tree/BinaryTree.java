@@ -5,8 +5,9 @@ import com.lake._06_balanceTree.printer.BinaryTreeInfo;
 import java.util.LinkedList;
 import java.util.Queue;
 
-
-@SuppressWarnings("unchecked")
+/**
+ * @author lakeqiu
+ */
 public class BinaryTree<E> implements BinaryTreeInfo {
 	protected int size;
 	protected Node<E> root;

@@ -2,7 +2,10 @@ package com.lake._06_balanceTree.tree;
 
 import java.util.Comparator;
 
-@SuppressWarnings("unchecked")
+/**
+ * @author lakeqiu
+ * @param <E>
+ */
 public class BST<E> extends BinaryTree<E> {
 	private Comparator<E> comparator;
 	
