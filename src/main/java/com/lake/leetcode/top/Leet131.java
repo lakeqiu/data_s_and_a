@@ -41,6 +41,7 @@ public class Leet131 {
         // 终止条件
         if (begin == end) {
             res.add(new ArrayList<>(track));
+            return;
         }
 
         for (int i = begin; i < end; i++) {

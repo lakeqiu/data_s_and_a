@@ -1,9 +1,6 @@
 package com.lake.leetcode.top;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
@@ -54,5 +51,16 @@ public class Leet078 {
 
             track.removeLast();
         }
+    }
+
+    public static void main(String[] args) {
+        new Leet078().subsets(new int[]{1, 2, 3});
+
+        try {
+            throw new RuntimeException("yunx");
+        } finally {
+            System.out.println(1111);
+        }
+
     }
 }
